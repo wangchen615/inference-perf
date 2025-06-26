@@ -60,6 +60,7 @@ jobs:
           echo "TAG_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
 
       - name: Show environment variables
+        if: ${{ env.DEBUG_MODE == 'true' }}
         run: |
           echo "=== Environment Variables ==="
           echo "GITHUB_REF: $GITHUB_REF"
