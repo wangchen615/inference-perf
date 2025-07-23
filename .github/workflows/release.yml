@@ -84,7 +84,7 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: python -m twine upload dist/*
+        run: python -m twine upload dist/*.whl dist/*.tar.gz
 
   docker:
     needs: build-and-publish  # Run after the release is created
