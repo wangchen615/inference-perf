@@ -10,7 +10,10 @@ dependencies = [
     "datasets>=3.3.2",
     "pandas>=2.2.0",
     "kubernetes>=29.0.0",
-    "pyyaml>=6.0.1",
+    "transformers>=4.50.2",
+    "google-cloud-storage>=3.1.0",
+    "pyyaml>=6.0.2",
+    "boto3>=1.39.0",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
@@ -20,14 +23,45 @@ license = {text = "Apache-2.0"}
 inference-perf = "inference_perf:main_cli"
 
 [project.optional-dependencies]
+analysis = [
+    "matplotlib>=3.9.0",
+]
 dev = [
     "mypy>=1.14.1",
     "ruff>=0.9.4",
     "pre-commit>=4.1.0",
     "pytest>=8.3.4",
-    "types-PyYAML>=6.0.12.20241230",
     "ipykernel>=6.29.5",
 ]
+
+[dependency-groups]
+lint = [
+    "mypy>=1.14.1",
+    "ruff>=0.9.4",
+    "pre-commit>=4.1.0",
+]
+test = [
+    "pytest>=8.3.4",
+    "ipykernel>=6.29.5",
+]
+types = [
+    "types-PyYAML>=6.0.12.20241230",
+    "types-requests>=2.32.0.20250328",
+]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.scripts]
+format = "ruff format"
+lint = "ruff check"
+test = "pytest"
+type-check = "mypy --strict ./inference_perf ./tests"
+validate = {composite = ["format", "lint", "type-check"]}
 
 [tool.ruff]
 # The GitHub editor is 127 chars wide
@@ -73,22 +107,26 @@ docstring-code-format = false
 # enabled.
 docstring-code-line-length = "dynamic"
 
-[tool.pdm]
-distribution = true
-
 [tool.pytest.ini_options]
 testpaths = ["."]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 
-[[tool.mypy.overrides]]
-module = ["datasets.*"]
-ignore_missing_imports = true
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["inference_perf*", "deploy*"]
 
-[build-system]
-requires = ["setuptools>=61"]
-build-backend = "setuptools.build_meta"
+[[tool.mypy.overrides]]
+module = [
+    "datasets.*",
+    "matplotlib.*",
+    "boto3.*",
+]
+ignore_missing_imports = true
 
 [tool.setuptools]
 packages = ["inference_perf", "fmperf"]
+
+[tool.mypy]
+disable_error_code = ["attr-defined"]

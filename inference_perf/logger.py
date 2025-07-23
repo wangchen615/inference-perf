@@ -11,21 +11,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from abc import ABC, abstractmethod
-from typing import Tuple
-from inference_perf.datagen import InferenceData
-from inference_perf.reportgen import ReportGenerator
+
+import logging
+import sys
 
 
-class ModelServerClient(ABC):
-    @abstractmethod
-    def __init__(self, *args: Tuple[int, ...]) -> None:
-        pass
+def setup_logging(level: str) -> None:
+    """
+    Setup logging configuration for inference_perf.
 
-    @abstractmethod
-    def set_report_generator(self, reportgen: ReportGenerator) -> None:
-        self.reportgen = reportgen
+    Args:
+        level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    """
+    numeric_level = getattr(logging, level.upper(), None)
+    if not isinstance(numeric_level, int):
+        raise ValueError(f"Invalid log level: {level}")
 
-    @abstractmethod
-    async def process_request(self, data: InferenceData) -> None:
-        raise NotImplementedError
+    logging.basicConfig(
+        level=numeric_level,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.StreamHandler(sys.stdout)],
+        force=True,
+    )

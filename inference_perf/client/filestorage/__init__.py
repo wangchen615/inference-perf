@@ -11,22 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from abc import ABC, abstractmethod
-from pydantic import BaseModel
+from .base import StorageClient
+from .local import LocalStorageClient
+from .gcs import GoogleCloudStorageClient
+from .s3 import SimpleStorageServiceClient
 
 
-class MetricsSummary(BaseModel):
-    total_requests: int
-    avg_prompt_tokens: float
-    avg_output_tokens: float
-    avg_time_per_request: float
-
-
-class MetricsClient(ABC):
-    @abstractmethod
-    def __init__(self) -> None:
-        pass
-
-    @abstractmethod
-    def collect_metrics_summary(self) -> MetricsSummary | None:
-        raise NotImplementedError
+__all__ = ["StorageClient", "LocalStorageClient", "GoogleCloudStorageClient","SimpleStorageServiceClient"]
